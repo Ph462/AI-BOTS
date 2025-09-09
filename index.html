@@ -1153,6 +1153,93 @@
             color: var(--gray);
         }
 
+        /* Chat Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-hover);
+            transition: var(--transition);
+            border: none;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-button i {
+            font-size: 1.5rem;
+        }
+
+        .chat-container {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow-hover);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .chat-container.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .chat-header {
+            background: var(--gradient);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-close {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .chat-iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .floating-card {
@@ -1197,6 +1284,11 @@
             .security-indicators {
                 flex-direction: column;
                 align-items: center;
+            }
+            
+            .chat-container {
+                width: 320px;
+                height: 400px;
             }
         }
 
@@ -1276,6 +1368,12 @@
                 flex-direction: column;
                 align-items: center;
             }
+            
+            .chat-container {
+                width: 300px;
+                height: 380px;
+                right: 10px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -1325,6 +1423,20 @@
             
             .data-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .chat-container {
+                width: 280px;
+                height: 350px;
+                right: 5px;
+                bottom: 65px;
+            }
+            
+            .chat-button {
+                width: 50px;
+                height: 50px;
+                right: 15px;
+                bottom: 15px;
             }
         }
     </style>
@@ -1708,6 +1820,22 @@
         </div>
     </section>
 
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <button class="chat-button" id="chatButton" aria-label="Open chat">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <h3><i class="fas fa-robot"></i> CatBot Assistant</h3>
+                <button class="chat-close" id="chatClose" aria-label="Close chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe src="https://cat-bot-246.zapier.app/chat" class="chat-iframe" title="Chat with CatBot Assistant"></iframe>
+        </div>
+    </div>
+
     <!-- Auth Forms -->
     <div class="auth-container" id="authContainer">
         <div class="auth-form" id="loginForm">
@@ -1865,6 +1993,11 @@
         const secureDataAccess = document.getElementById('secureDataAccess');
         const signOutBtn = document.getElementById('signOutBtn');
         const gmailAuthForm = document.getElementById('gmailAuthForm');
+        
+        // Chat elements
+        const chatButton = document.getElementById('chatButton');
+        const chatContainer = document.getElementById('chatContainer');
+        const chatClose = document.getElementById('chatClose');
         
         // Password toggle elements
         const loginPasswordToggle = document.getElementById('loginPasswordToggle');
@@ -2287,6 +2420,35 @@
         gmailAuthForm.addEventListener('submit', function(e) {
             e.preventDefault();
             realGmailSignin.click();
+        });
+        
+        // Chat Widget Functionality
+        chatButton.addEventListener('click', function() {
+            chatContainer.classList.toggle('active');
+            if (chatContainer.classList.contains('active')) {
+                this.setAttribute('aria-label', 'Close chat');
+                this.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                this.setAttribute('aria-label', 'Open chat');
+                this.innerHTML = '<i class="fas fa-comment-dots"></i>';
+            }
+        });
+        
+        chatClose.addEventListener('click', function() {
+            chatContainer.classList.remove('active');
+            chatButton.setAttribute('aria-label', 'Open chat');
+            chatButton.innerHTML = '<i class="fas fa-comment-dots"></i>';
+        });
+        
+        // Close chat when clicking outside
+        document.addEventListener('click', function(e) {
+            if (chatContainer.classList.contains('active') && 
+                !chatContainer.contains(e.target) && 
+                !chatButton.contains(e.target)) {
+                chatContainer.classList.remove('active');
+                chatButton.setAttribute('aria-label', 'Open chat');
+                chatButton.innerHTML = '<i class="fas fa-comment-dots"></i>';
+            }
         });
     </script>
 </body>
